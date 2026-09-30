@@ -18,7 +18,7 @@ function GoogleLogo() {
 }
 
 const inputClass =
-  'w-full rounded-2xl border border-line bg-surface px-4 py-3.5 text-[15px] outline-none placeholder:text-muted focus:border-accent'
+  'w-full rounded-2xl border border-line bg-surface px-4 py-3.5 text-base outline-none placeholder:text-muted focus:border-accent'
 
 export default function LoginPage() {
   const { session, loading } = useAuth()
@@ -77,7 +77,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6 py-10">
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-[max(1.5rem,env(safe-area-inset-left))] py-[max(2.5rem,env(safe-area-inset-top))]">
       <div className="mb-8 text-center">
         <img src="/favicon.svg" alt="" className="mx-auto mb-5 size-16" />
         <h1 className="text-3xl font-bold tracking-tight">Oladeinde List</h1>

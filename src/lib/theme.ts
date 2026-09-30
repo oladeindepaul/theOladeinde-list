@@ -16,6 +16,8 @@ function apply(choice: ThemeChoice) {
   const dark =
     choice === 'dark' || (choice === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
   document.documentElement.classList.toggle('dark', dark)
+  // Match the phone's status/address bar to the app background.
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0f0e14' : '#f3f1fb')
 }
 
 export function useTheme() {

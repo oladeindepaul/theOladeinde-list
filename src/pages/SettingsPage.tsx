@@ -83,7 +83,7 @@ export default function SettingsPage() {
   return (
     <>
       <PageHeader title="Settings" />
-      <div className="space-y-4">
+      <div className="max-w-2xl space-y-4">
         <ProfileSection />
 
         <section className="rounded-3xl bg-surface p-5">
@@ -95,11 +95,11 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => setChoice(value)}
                 aria-pressed={choice === value}
-                className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-colors ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium transition-colors ${
                   choice === value ? 'bg-ink text-bg' : 'text-muted hover:text-ink'
                 }`}
               >
-                <Icon size={16} />
+                <Icon size={16} className="hidden min-[360px]:block" />
                 {label}
               </button>
             ))}

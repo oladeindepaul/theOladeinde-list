@@ -52,7 +52,14 @@ supabase/schema.sql   Tables, RLS policies, triggers, storage bucket (idempotent
 - **Components:** function components, default export per file; Tailwind classes inline.
 - **Data:** every table has `user_id` + RLS "users manage own rows". IDs are UUIDs generated on the client so records can be created offline; deletes are soft (`deleted_at`) so they sync. Any schema change goes in `supabase/schema.sql` and must stay re-runnable (`if not exists`, `drop policy if exists`).
 - **Avatars** are stored at `avatars/<user id>/avatar-<timestamp>.<ext>`; uploading removes the user's older files.
-- Keep the app usable at 375px wide; content column is `max-w-md`.
+- **Responsive (must work on Android, iOS, tablet, desktop):**
+  - Phones (< `md`, 768px): single column, floating `BottomNav`. Test at 320px and 375px wide, and in landscape.
+  - Tablets (`md`): `Sidebar` as an icon rail; content up to `max-w-3xl`.
+  - Desktop (`lg`+): labelled `Sidebar`; content up to `max-w-5xl`. Use extra width for multi-column layouts (e.g. `lg:grid-cols-2`), not stretched single columns.
+  - Respect notches/home bars with `env(safe-area-inset-*)` (see `Layout.tsx`).
+  - Touch targets at least 44px. Form fields stay 16px on touch screens (smaller makes iOS zoom in).
+  - Nav items live in `components/nav.ts`; both navs read from it.
+  - Use `min-h-dvh`/`h-dvh`, not `100vh` (mobile browser bars).
 - Handle `localStorage` access in try/catch (it can throw in private mode).
 
 ## Roadmap

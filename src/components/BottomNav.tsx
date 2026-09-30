@@ -1,17 +1,8 @@
-import { CalendarDays, FileText, House, MessageCircleMore, Plus } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
+import { navItems, type NavItem } from './nav.ts'
 
-type TabDef = { to: string; label: string; icon: LucideIcon }
-
-const tabs: TabDef[] = [
-  { to: '/', label: 'Home', icon: House },
-  { to: '/inbox', label: 'Inbox', icon: MessageCircleMore },
-  { to: '/tasks', label: 'Tasks', icon: FileText },
-  { to: '/calendar', label: 'Calendar', icon: CalendarDays },
-]
-
-function Tab({ to, label, icon: Icon }: TabDef) {
+function Tab({ to, label, icon: Icon }: NavItem) {
   return (
     <NavLink
       to={to}
@@ -35,12 +26,17 @@ function Tab({ to, label, icon: Icon }: TabDef) {
   )
 }
 
+/** Phone navigation. Hidden from tablet width up, where the Sidebar takes over. */
 export default function BottomNav() {
+  const [home, inbox, tasks, calendar] = navItems
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-      <div className="flex items-center justify-between rounded-[28px] bg-surface px-4 py-3 shadow-[0_8px_30px_rgba(40,20,120,0.10)]">
-        <Tab {...tabs[0]} />
-        <Tab {...tabs[1]} />
+    <nav
+      aria-label="Main"
+      className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-xl px-[max(1rem,env(safe-area-inset-left))] pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden"
+    >
+      <div className="flex items-center justify-between rounded-[28px] bg-surface px-3 py-2.5 shadow-[0_8px_30px_rgba(40,20,120,0.10)] min-[380px]:px-4 min-[380px]:py-3">
+        <Tab {...home} />
+        <Tab {...inbox} />
         {/* Wired up to the add-task sheet in step 3. */}
         <button
           type="button"
@@ -49,8 +45,8 @@ export default function BottomNav() {
         >
           <Plus size={28} strokeWidth={2.25} />
         </button>
-        <Tab {...tabs[2]} />
-        <Tab {...tabs[3]} />
+        <Tab {...tasks} />
+        <Tab {...calendar} />
       </div>
     </nav>
   )
