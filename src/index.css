@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design tokens from the inspo: soft lavender surfaces, purple accent, pastel stat cards. */
+@theme {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-accent: #6c47ff;
+  --color-accent-soft: var(--accent-soft);
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+
+  --color-card-purple: var(--card-purple);
+  --color-card-peach: var(--card-peach);
+  --color-card-sky: var(--card-sky);
+  --color-card-mint: var(--card-mint);
+}
+
+:root {
+  --bg: #f3f1fb;
+  --surface: #ffffff;
+  --surface-2: #f4f4f7;
+  --ink: #16151c;
+  --muted: #7b7a86;
+  --line: #ebe9f2;
+  --accent-soft: #ece7ff;
+
+  --card-purple: #e6e3f7;
+  --card-peach: #fde9e0;
+  --card-sky: #daf0fb;
+  --card-mint: #e2f5e9;
+}
+
+.dark {
+  --bg: #0f0e14;
+  --surface: #1a1922;
+  --surface-2: #24232e;
+  --ink: #f3f2f8;
+  --muted: #9a98a8;
+  --line: #2c2b36;
+  --accent-soft: #2a2447;
+
+  --card-purple: #2a2544;
+  --card-peach: #3b2a24;
+  --card-sky: #1e3240;
+  --card-mint: #1f3529;
+}
+
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
