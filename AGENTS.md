@@ -46,6 +46,8 @@ src/
     dates.ts          'yyyy-MM-dd' local-date helpers, time formatting
     task-types.ts     To Do / Event / Reminder / Milestone labels, icons, colours
     task-groups.ts    groupTasks(): Overdue / Today / Upcoming / Anytime / Completed
+    reminders.ts      Start/end reminders: scheduler, messages, device alerts, bell data
+    summary.ts        Home overview numbers
   components/         Layout, BottomNav, Avatar, AvatarPicker, PageHeader, RequireAuth
   pages/              One file per route
 supabase/schema.sql   Tables, RLS policies, triggers, storage bucket (idempotent; run in SQL Editor)
@@ -60,6 +62,7 @@ supabase/schema.sql   Tables, RLS policies, triggers, storage bucket (idempotent
 - **Tasks are local-first:** components never call Supabase for tasks. Write through `lib/tasks.ts` (it marks rows `dirty` and schedules a sync); read with `useLiveQuery` hooks. `Layout` syncs on open, on reconnect, on return to foreground and every minute.
 - **Task rows:** always render tasks with `components/TaskItem.tsx`; use `SortableTaskList` for drag-and-drop. Manual order is the `position` column; `reorderTask()` saves only the moved task (fractional position between neighbours). The Calendar orders a day by time instead.
 - **Add/edit/delete UI:** open the sheet with `useTaskSheet().open({ date })` or `open({ task })`; delete with `useTaskSheet().removeTask(id)` so the Undo toast appears.
+- **Reminders:** any task with a date + start time reminds at the start ("Dear {first name}, It is time to {notes, or title}.") and at the end time if set ("Dear {first name}, Your reminder "{title}" has ended."). `components/Reminders.tsx` (mounted in `Layout`) runs the scheduler and shows the in-app banner; fired reminders are stored in the local `notifications` table (id `taskId:kind:time`, so each fires once) and listed by `NotificationBell`. System notifications go through the service worker (`public/sw-notify.js` handles taps). They only fire while the app is open or in the background; alerts with the app fully closed need Web Push (not built yet).
 - **Avatars** are stored at `avatars/<user id>/avatar-<timestamp>.<ext>`; uploading removes the user's older files.
 - **Responsive (must work on Android, iOS, tablet, desktop):**
   - Phones (< `md`, 768px): single column, floating `BottomNav`. Test at 320px and 375px wide, and in landscape.

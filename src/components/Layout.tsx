@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { syncNow } from '../lib/sync.ts'
 import BottomNav from './BottomNav.tsx'
+import Reminders from './Reminders.tsx'
 import Sidebar from './Sidebar.tsx'
 import TaskSheetProvider from './TaskSheetProvider.tsx'
 
@@ -41,6 +42,7 @@ export default function Layout() {
           </div>
         </main>
         <BottomNav />
+        <Reminders />
       </div>
     </TaskSheetProvider>
   )

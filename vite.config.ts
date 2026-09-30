@@ -11,6 +11,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
+        // Handles taps on reminder notifications.
+        importScripts: ['sw-notify.js'],
         // Cache fonts and profile photos so they still show offline.
         runtimeCaching: [
           {

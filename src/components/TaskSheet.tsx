@@ -1,4 +1,4 @@
-import { Trash2, X } from 'lucide-react'
+import { BellRing, Trash2, X } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useAuth } from '../lib/auth-context.ts'
 import { todayISO } from '../lib/dates.ts'
@@ -158,10 +158,16 @@ export default function TaskSheet({ args, onClose, onDelete }: Props) {
               />
             </label>
           </div>
+          {start && date && (
+            <p className="-mt-2 flex items-center gap-1.5 text-sm text-muted">
+              <BellRing size={15} className="shrink-0 text-accent" />
+              {end ? "You'll be reminded when it starts and when it ends." : "You'll be reminded when it starts."}
+            </p>
+          )}
 
           <textarea
             className={`${field} min-h-24 resize-y`}
-            placeholder="Notes (optional)"
+            placeholder="Notes (shown in the reminder: “It is time to …”)"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />

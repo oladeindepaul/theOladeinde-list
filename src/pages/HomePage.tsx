@@ -1,8 +1,9 @@
 import { format } from 'date-fns'
-import { Bell, ChevronDown, ChevronRight, Plus } from 'lucide-react'
+import { ChevronDown, ChevronRight, Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AvatarPicker from '../components/AvatarPicker.tsx'
+import NotificationBell from '../components/NotificationBell.tsx'
 import TaskItem from '../components/TaskItem.tsx'
 import { useTaskSheet } from '../components/task-sheet-context.ts'
 import { displayName, useAuth } from '../lib/auth-context.ts'
@@ -84,7 +85,6 @@ export default function HomePage() {
   const all = useAllTasks(user!.id)
   const [range, setRange] = useState<SummaryRange>(readRange)
   const summary = useMemo(() => (all ? summarize(all, range) : null), [all, range])
-  const alerts = summary?.overdue ?? 0
   const rangeWord = range === 'today' ? 'today' : range === 'week' ? 'this week' : 'this month'
 
   function changeRange(r: SummaryRange) {
@@ -106,18 +106,7 @@ export default function HomePage() {
             <p className="truncate text-lg leading-tight font-semibold">{displayName(user, profile)}</p>
           </Link>
         </div>
-        <Link
-          to="/tasks"
-          aria-label={alerts ? `${alerts} overdue task${alerts === 1 ? '' : 's'}` : 'No overdue tasks'}
-          className="relative grid size-12 shrink-0 place-items-center rounded-full border border-line bg-surface"
-        >
-          <Bell size={22} strokeWidth={1.75} />
-          {alerts > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 grid min-w-5 place-items-center rounded-full bg-orange-500 px-1 text-[11px] font-bold text-white ring-2 ring-bg">
-              {alerts > 9 ? '9+' : alerts}
-            </span>
-          )}
-        </Link>
+        <NotificationBell />
       </header>
 
       <p className="mt-6 text-sm text-muted">{format(parseISODate(todayISO())!, 'EEEE, d MMMM')}</p>
