@@ -1,4 +1,4 @@
-import { LoaderCircle, MailCheck } from 'lucide-react'
+import { Eye, EyeOff, LoaderCircle, MailCheck } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth-context.ts'
@@ -6,19 +6,48 @@ import { supabase, supabaseConfigured } from '../lib/supabase.ts'
 
 type Mode = 'signin' | 'signup'
 
-function GoogleLogo() {
-  return (
-    <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true">
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
-      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
-    </svg>
-  )
-}
-
 const inputClass =
   'w-full rounded-2xl border border-line bg-surface px-4 py-3.5 text-base outline-none placeholder:text-muted focus:border-accent'
+
+type PasswordInputProps = {
+  value: string
+  onChange: (value: string) => void
+  placeholder: string
+  autoComplete: string
+}
+
+/** Password field that hides the text as dots, with an eye button to show or hide it. */
+function PasswordInput({ value, onChange, placeholder, autoComplete }: PasswordInputProps) {
+  const [visible, setVisible] = useState(false)
+  const Icon = visible ? EyeOff : Eye
+
+  return (
+    <div className="relative">
+      <input
+        className={`${inputClass} pr-14`}
+        type={visible ? 'text' : 'password'}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        minLength={6}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? 'Hide password' : 'Show password'}
+        aria-pressed={visible}
+        className="absolute top-1/2 right-2 grid size-10 -translate-y-1/2 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-ink"
+      >
+        <Icon size={20} />
+      </button>
+    </div>
+  )
+}
 
 export default function LoginPage() {
   const { session, loading } = useAuth()
@@ -26,30 +55,16 @@ export default function LoginPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [busy, setBusy] = useState<'google' | 'email' | null>(null)
+  const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [checkEmail, setCheckEmail] = useState(false)
 
   if (!loading && session) return <Navigate to="/" replace />
 
-  async function signInWithGoogle() {
-    setError(null)
-    setBusy('google')
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin },
-    })
-    // On success the browser leaves for Google, so we only get here on failure.
-    if (error) {
-      setError(error.message)
-      setBusy(null)
-    }
-  }
-
   async function submit(e: FormEvent) {
     e.preventDefault()
     setError(null)
-    setBusy('email')
+    setBusy(true)
     try {
       if (mode === 'signup') {
         const { data, error } = await supabase.auth.signUp({
@@ -67,7 +82,7 @@ export default function LoginPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
-      setBusy(null)
+      setBusy(false)
     }
   }
 
@@ -110,22 +125,6 @@ export default function LoginPage() {
         </div>
       ) : (
         <div className="rounded-3xl bg-surface p-6 shadow-[0_8px_30px_rgba(40,20,120,0.06)]">
-          <button
-            type="button"
-            onClick={signInWithGoogle}
-            disabled={busy !== null}
-            className="flex w-full items-center justify-center gap-3 rounded-2xl border border-line bg-surface py-3.5 font-semibold transition-colors hover:bg-surface-2 disabled:opacity-60"
-          >
-            {busy === 'google' ? <LoaderCircle size={20} className="animate-spin" /> : <GoogleLogo />}
-            Continue with Google
-          </button>
-
-          <div className="my-5 flex items-center gap-3 text-xs text-muted">
-            <span className="h-px flex-1 bg-line" />
-            or with email
-            <span className="h-px flex-1 bg-line" />
-          </div>
-
           <div className="mb-4 grid grid-cols-2 gap-1 rounded-2xl bg-surface-2 p-1" role="tablist">
             {(['signin', 'signup'] as const).map((m) => (
               <button
@@ -163,15 +162,11 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <input
-              className={inputClass}
-              type="password"
+            <PasswordInput
+              value={password}
+              onChange={setPassword}
               placeholder={mode === 'signup' ? 'Password (at least 6 characters)' : 'Password'}
               autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
             />
 
             {error && (
@@ -182,10 +177,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={busy !== null}
+              disabled={busy}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-3.5 font-semibold text-white transition-opacity disabled:opacity-60"
             >
-              {busy === 'email' && <LoaderCircle size={18} className="animate-spin" />}
+              {busy && <LoaderCircle size={18} className="animate-spin" />}
               {mode === 'signin' ? 'Sign in' : 'Create account'}
             </button>
           </form>

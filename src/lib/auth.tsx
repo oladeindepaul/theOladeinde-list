@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user])
 
-  // Until the fetch lands, show the cached profile or whatever Google/sign-up gave us.
+  // Until the fetch lands, show the cached profile or what was given at sign-up.
   const currentProfile = !user
     ? null
     : profile?.id === user.id

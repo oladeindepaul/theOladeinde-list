@@ -8,7 +8,7 @@ A mobile-first to-do / project app installable as a PWA. Screens: Home (overview
 ## Stack
 - React 19 + TypeScript + Vite (rolldown), React Router 7
 - Tailwind CSS v4 via `@tailwindcss/vite` (config lives in `src/index.css`, no `tailwind.config.js`)
-- Supabase: auth (Google OAuth + email/password), Postgres with RLS, Storage (`avatars` bucket)
+- Supabase: auth (email + password; Google sign-in removed from the UI), Postgres with RLS, Storage (`avatars` bucket)
 - Offline: `vite-plugin-pwa` (service worker) + Dexie/IndexedDB for local-first data
 - Drag and drop: `@dnd-kit`; icons: `lucide-react`; dates: `date-fns`
 - Hosting: Vercel (`vercel.json` rewrites all routes to `index.html`)
