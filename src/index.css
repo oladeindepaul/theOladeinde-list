@@ -26,6 +26,12 @@
   --color-type-event: #10b981;
   --color-type-reminder: #f43f5e;
   --color-type-milestone: #f59e0b;
+
+  /* Squiggles on the Home stat cards. */
+  --color-wave-purple: #7c5cff;
+  --color-wave-peach: #f07c4a;
+  --color-wave-sky: #36a7d8;
+  --color-wave-mint: #3fb57a;
 }
 
 :root {

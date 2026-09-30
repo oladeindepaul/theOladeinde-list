@@ -73,7 +73,8 @@ supabase/schema.sql   Tables, RLS policies, triggers, storage bucket (idempotent
 
 ## Roadmap
 1. ~~Layout, theme, bottom nav~~
-2. Home: overview stat cards + Projects section (tabs, edit/delete menu)
+2. ~~Home: greeting, Overview cards (Today / Planned / Overdue / Completed) with period picker, Up next, progress ring~~ (`lib/summary.ts`)
+   - Later: Projects (CRUD, sync, project picker in the task sheet, Projects section on Home)
 3. ~~Tasks page: Overdue/Today/Upcoming/Anytime/Completed sections, search, type filter, drag-and-drop reorder~~
 4. ~~Calendar: month grid with task dots, tap a day to plan it, add/edit/complete/delete with undo~~
 5. ~~Auth + profile photo upload~~
