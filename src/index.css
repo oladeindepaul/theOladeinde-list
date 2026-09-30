@@ -27,6 +27,9 @@
   --color-type-reminder: #f43f5e;
   --color-type-milestone: #f59e0b;
 
+  /* Progress / done. */
+  --color-success: #22c55e;
+
   /* Squiggles on the Home stat cards. */
   --color-wave-purple: #7c5cff;
   --color-wave-peach: #f07c4a;
@@ -101,4 +104,28 @@ body {
 a,
 button {
   touch-action: manipulation;
+}
+
+/* Tick pops in when the progress ring completes. */
+@keyframes pop {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

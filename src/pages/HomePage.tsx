@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { ChevronDown, ChevronRight, Plus } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AvatarPicker from '../components/AvatarPicker.tsx'
@@ -58,24 +58,49 @@ function StatCard({ value, label, to, bg, wave }: StatCardProps) {
   )
 }
 
-function ProgressRing({ value }: { value: number }) {
-  const r = 26
+/** Green ring that fills as tasks are ticked off, with "done/total" inside; a full green disc with a tick at 100%. */
+function ProgressRing({ done, total }: { done: number; total: number }) {
+  const r = 40
   const c = 2 * Math.PI * r
+  const complete = total > 0 && done >= total
+  const value = total > 0 ? Math.min(done / total, 1) : 0
+
   return (
-    <svg viewBox="0 0 64 64" className="size-16 shrink-0 -rotate-90" aria-hidden="true">
-      <circle cx="32" cy="32" r={r} fill="none" strokeWidth="7" className="stroke-surface-2" />
-      <circle
-        cx="32"
-        cy="32"
-        r={r}
-        fill="none"
-        strokeWidth="7"
-        strokeLinecap="round"
-        strokeDasharray={c}
-        strokeDashoffset={c * (1 - value)}
-        className="stroke-accent transition-[stroke-dashoffset] duration-500"
-      />
-    </svg>
+    <div
+      role="img"
+      aria-label={complete ? `All ${total} tasks done` : `${done} of ${total} tasks done`}
+      className="relative grid size-24 shrink-0 place-items-center"
+    >
+      <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90" aria-hidden="true">
+        <circle cx="50" cy="50" r={r} fill="none" strokeWidth="10" className="stroke-surface-2" />
+        <circle
+          cx="50"
+          cy="50"
+          r={r}
+          fill="none"
+          strokeWidth="10"
+          strokeLinecap={complete ? 'butt' : 'round'}
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - value)}
+          className={`stroke-success transition-[stroke-dashoffset] duration-700 ease-out ${value === 0 ? 'opacity-0' : ''}`}
+        />
+        {/* At 100% the centre fills in green too. */}
+        <circle
+          cx="50"
+          cy="50"
+          r={r + 5}
+          className={`fill-success transition-all duration-500 ${complete ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}
+          style={{ transformOrigin: '50px 50px' }}
+        />
+      </svg>
+      {complete ? (
+        <Check size={44} strokeWidth={3} className="relative animate-[pop_400ms_ease-out] text-white" aria-hidden="true" />
+      ) : (
+        <span className="relative text-lg font-bold tabular-nums" aria-hidden="true">
+          {done}/{total}
+        </span>
+      )}
+    </div>
   )
 }
 
@@ -201,12 +226,21 @@ export default function HomePage() {
               <p className="mt-2 text-sm text-muted">Nothing scheduled {rangeWord}. Add a task to start tracking.</p>
             ) : (
               <div className="mt-3 flex items-center gap-4">
-                <ProgressRing value={summary.progress} />
+                <ProgressRing done={summary.completed} total={summary.completed + summary.planned} />
                 <div>
-                  <p className="text-2xl font-bold tabular-nums">{Math.round(summary.progress * 100)}%</p>
-                  <p className="text-sm text-muted">
-                    {summary.completed} of {summary.completed + summary.planned} tasks done
-                  </p>
+                  {summary.planned === 0 ? (
+                    <>
+                      <p className="text-xl font-bold text-success">All done!</p>
+                      <p className="text-sm text-muted">Every task {rangeWord} is ticked off.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-2xl font-bold tabular-nums">{Math.round(summary.progress * 100)}%</p>
+                      <p className="text-sm text-muted">
+                        {summary.completed} of {summary.completed + summary.planned} tasks done
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             )}
