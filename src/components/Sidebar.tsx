@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { displayName, useAuth } from '../lib/auth-context.ts'
 import Avatar from './Avatar.tsx'
 import { navItems } from './nav.ts'
+import { useDefaultTaskDate, useTaskSheet } from './task-sheet-context.ts'
 
 /**
  * Tablet and desktop navigation. An icon rail on tablets (md), expanding to a
@@ -11,6 +12,8 @@ import { navItems } from './nav.ts'
 export default function Sidebar() {
   const { user, profile } = useAuth()
   const name = displayName(user, profile)
+  const { open } = useTaskSheet()
+  const date = useDefaultTaskDate()
 
   return (
     <aside className="sticky top-0 hidden h-dvh shrink-0 flex-col overflow-y-auto border-r [scrollbar-width:none] border-line bg-surface py-6 pl-[env(safe-area-inset-left)] md:flex md:w-[88px] lg:w-64">
@@ -19,10 +22,10 @@ export default function Sidebar() {
         <span className="hidden text-lg font-bold tracking-tight lg:inline">Oladeinde List</span>
       </div>
 
-      {/* Wired up to the add-task sheet in step 3. */}
       <div className="mb-6 shrink-0 px-4 lg:px-5">
         <button
           type="button"
+          onClick={() => open({ date })}
           aria-label="Add task"
           className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-ink font-semibold text-bg transition-transform active:scale-[0.98]"
         >

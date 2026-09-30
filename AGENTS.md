@@ -40,6 +40,11 @@ src/
     auth-context.ts   useAuth(), displayName(), Profile type (import these, not auth.tsx)
     avatar.ts         Resize + upload profile photo to Storage
     theme.ts          useTheme(): light / dark / system, stored in localStorage
+    db.ts             Dexie (IndexedDB) schema + Task types; the UI reads/writes here
+    tasks.ts          addTask/updateTask/deleteTask/restoreTask/toggleComplete + live hooks
+    sync.ts           syncNow()/scheduleSync(): push dirty rows, pull by updated_at
+    dates.ts          'yyyy-MM-dd' local-date helpers, time formatting
+    task-types.ts     To Do / Event / Reminder / Milestone labels, icons, colours
   components/         Layout, BottomNav, Avatar, AvatarPicker, PageHeader, RequireAuth
   pages/              One file per route
 supabase/schema.sql   Tables, RLS policies, triggers, storage bucket (idempotent; run in SQL Editor)
@@ -51,6 +56,8 @@ supabase/schema.sql   Tables, RLS policies, triggers, storage bucket (idempotent
 - **Imports** include the `.ts`/`.tsx` extension (`allowImportingTsExtensions`).
 - **Components:** function components, default export per file; Tailwind classes inline.
 - **Data:** every table has `user_id` + RLS "users manage own rows". IDs are UUIDs generated on the client so records can be created offline; deletes are soft (`deleted_at`) so they sync. Any schema change goes in `supabase/schema.sql` and must stay re-runnable (`if not exists`, `drop policy if exists`).
+- **Tasks are local-first:** components never call Supabase for tasks. Write through `lib/tasks.ts` (it marks rows `dirty` and schedules a sync); read with `useLiveQuery` hooks. `Layout` syncs on open, on reconnect, on return to foreground and every minute.
+- **Add/edit/delete UI:** open the sheet with `useTaskSheet().open({ date })` or `open({ task })`; delete with `useTaskSheet().removeTask(id)` so the Undo toast appears.
 - **Avatars** are stored at `avatars/<user id>/avatar-<timestamp>.<ext>`; uploading removes the user's older files.
 - **Responsive (must work on Android, iOS, tablet, desktop):**
   - Phones (< `md`, 768px): single column, floating `BottomNav`. Test at 320px and 375px wide, and in landscape.
@@ -65,8 +72,8 @@ supabase/schema.sql   Tables, RLS policies, triggers, storage bucket (idempotent
 ## Roadmap
 1. ~~Layout, theme, bottom nav~~
 2. Home: overview stat cards + Projects section (tabs, edit/delete menu)
-3. Tasks: CRUD, complete, drag-and-drop reorder, add-task sheet from the "+" button, stored in Dexie
-4. Calendar: month grid with task dots + Today's Task list
+3. Tasks page: grouped smart views, search/filter, drag-and-drop reorder (add/edit/delete sheet already done)
+4. ~~Calendar: month grid with task dots, tap a day to plan it, add/edit/complete/delete with undo~~
 5. ~~Auth + profile photo upload~~
-6. Offline sync: Dexie <-> Supabase (push local changes, pull by `updated_at`)
+6. ~~Offline sync: Dexie <-> Supabase (push local changes, pull by `updated_at`)~~ (projects still to sync)
 7. Integrations: Google Calendar, Slack, email (via Supabase Edge Functions)

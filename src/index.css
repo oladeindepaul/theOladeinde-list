@@ -20,6 +20,12 @@
   --color-card-peach: var(--card-peach);
   --color-card-sky: var(--card-sky);
   --color-card-mint: var(--card-mint);
+
+  /* Task type colours: icons and calendar dots. */
+  --color-type-todo: #3b82f6;
+  --color-type-event: #10b981;
+  --color-type-reminder: #f43f5e;
+  --color-type-milestone: #f59e0b;
 }
 
 :root {

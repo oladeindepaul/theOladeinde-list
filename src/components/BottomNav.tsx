@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { navItems, type NavItem } from './nav.ts'
+import { useDefaultTaskDate, useTaskSheet } from './task-sheet-context.ts'
 
 function Tab({ to, label, icon: Icon }: NavItem) {
   return (
@@ -29,6 +30,8 @@ function Tab({ to, label, icon: Icon }: NavItem) {
 /** Phone navigation. Hidden from tablet width up, where the Sidebar takes over. */
 export default function BottomNav() {
   const [home, inbox, tasks, calendar] = navItems
+  const { open } = useTaskSheet()
+  const date = useDefaultTaskDate()
   return (
     <nav
       aria-label="Main"
@@ -37,9 +40,9 @@ export default function BottomNav() {
       <div className="flex items-center justify-between rounded-[28px] bg-surface px-3 py-2.5 shadow-[0_8px_30px_rgba(40,20,120,0.10)] min-[380px]:px-4 min-[380px]:py-3">
         <Tab {...home} />
         <Tab {...inbox} />
-        {/* Wired up to the add-task sheet in step 3. */}
         <button
           type="button"
+          onClick={() => open({ date })}
           aria-label="Add task"
           className="grid size-14 place-items-center rounded-2xl bg-ink text-bg transition-transform active:scale-95"
         >
