@@ -52,6 +52,42 @@ export const restoreTask = (id: string) => updateTask(id, { deleted_at: null })
 export const toggleComplete = (task: LocalTask) =>
   updateTask(task.id, { completed_at: task.completed_at ? null : now() })
 
+/** A position that sorts between two neighbours (either may be missing at the ends). */
+function positionBetween(before?: number, after?: number) {
+  if (before === undefined && after === undefined) return Date.now()
+  if (before === undefined) return after! - 1024
+  if (after === undefined) return before + 1024
+  return (before + after) / 2
+}
+
+/**
+ * Moves activeId to overId's slot in a list ordered by position. Returns the new
+ * order straight away (for an instant UI) and saves only the moved task.
+ */
+export function reorderTask(list: LocalTask[], activeId: string, overId: string) {
+  const from = list.findIndex((t) => t.id === activeId)
+  const to = list.findIndex((t) => t.id === overId)
+  if (from < 0 || to < 0 || from === to) return list
+  const next = [...list]
+  const [moved] = next.splice(from, 1)
+  next.splice(to, 0, moved)
+  void updateTask(moved.id, { position: positionBetween(next[to - 1]?.position, next[to + 1]?.position) })
+  return next
+}
+
+/** Live list of all the user's tasks (not deleted). */
+export function useAllTasks(userId: string) {
+  return useLiveQuery(
+    () =>
+      db.tasks
+        .where('user_id')
+        .equals(userId)
+        .filter((t) => !t.deleted_at)
+        .toArray(),
+    [userId],
+  )
+}
+
 /** Live list of a day's tasks; re-renders on any change. */
 export function useTasksOn(userId: string, date: string) {
   return useLiveQuery(

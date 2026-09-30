@@ -10,15 +10,15 @@ import {
   startOfMonth,
   startOfToday,
 } from 'date-fns'
-import { CheckCircle2, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import TaskItem from '../components/TaskItem.tsx'
 import { useTaskSheet } from '../components/task-sheet-context.ts'
 import { useAuth } from '../lib/auth-context.ts'
-import { formatTimeRange, parseISODate, toISODate } from '../lib/dates.ts'
-import type { LocalTask } from '../lib/db.ts'
+import { parseISODate, toISODate } from '../lib/dates.ts'
 import { taskTypeMeta } from '../lib/task-types.ts'
-import { toggleComplete, useTaskTypesByDay, useTasksOn } from '../lib/tasks.ts'
+import { useTaskTypesByDay, useTasksOn } from '../lib/tasks.ts'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -81,42 +81,6 @@ function MonthGrid({
         )
       })}
     </div>
-  )
-}
-
-function TaskRow({ task }: { task: LocalTask }) {
-  const { open, removeTask } = useTaskSheet()
-  const meta = taskTypeMeta(task.type)
-  const done = Boolean(task.completed_at)
-  const Icon = done ? CheckCircle2 : meta.icon
-
-  return (
-    <li className="group flex items-start gap-3 border-t border-line py-4 first:border-t-0">
-      <button
-        type="button"
-        onClick={() => toggleComplete(task)}
-        aria-label={done ? `Mark "${task.title}" as not done` : `Mark "${task.title}" as done`}
-        aria-pressed={done}
-        className={`-m-2 mt-3 grid size-10 shrink-0 place-items-center rounded-full hover:bg-surface-2 ${
-          done ? 'text-type-event' : meta.text
-        }`}
-      >
-        <Icon size={22} strokeWidth={1.75} />
-      </button>
-      <button type="button" onClick={() => open({ task })} className="min-w-0 flex-1 text-left">
-        <p className="text-xs text-muted">{meta.label}</p>
-        <p className={`mt-0.5 font-semibold break-words ${done ? 'text-muted line-through' : ''}`}>{task.title}</p>
-        <p className="mt-2 text-sm text-muted">{formatTimeRange(task.start_time, task.end_time)}</p>
-      </button>
-      <button
-        type="button"
-        onClick={() => removeTask(task.id)}
-        aria-label={`Delete "${task.title}"`}
-        className="-mr-2 grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-red-600/10 hover:text-red-600 md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
-      >
-        <Trash2 size={18} />
-      </button>
-    </li>
   )
 }
 
@@ -212,7 +176,7 @@ export default function CalendarPage() {
         ) : (
           <ul className="md:rounded-3xl md:bg-surface md:px-6">
             {tasks.map((t) => (
-              <TaskRow key={t.id} task={t} />
+              <TaskItem key={t.id} task={t} />
             ))}
           </ul>
         )}

@@ -37,3 +37,7 @@ db.version(1).stores({
   tasks: 'id, [user_id+due_date], dirty',
   meta: 'key',
 })
+// v2: plain user_id index so undated ("Anytime") tasks can be listed too.
+db.version(2).stores({
+  tasks: 'id, user_id, [user_id+due_date], dirty',
+})
